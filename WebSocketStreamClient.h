@@ -2,28 +2,30 @@
 #define __WEBSOCKETSTREAMCLIENT_H_
 
 #include <WiFiClientSecure.h>
-#include "WebSocketClient250.h"
+#include <WebSocketClient.h>
 #include <Client.h>
 
 class WebSocketStreamClient : public Client
 {
 public:
-  WebSocketStreamClient(WebSocketClient250 &webSocketClient, const char *path)
+  WebSocketStreamClient(WebSocketClient &webSocketClient, const char *path)
   {
     _webSocketClient = &webSocketClient;
     _path = path;
   }
 
-  int connect(const IPAddress ip, uint16_t port)
+  int connect(IPAddress ip, uint16_t port)
   {
-    _webSocketClient->begin(_path);
-    return 1;
+    (void)ip;
+    (void)port;
+    return _webSocketClient->begin(_path, "mqtt")==0?1:0;
   }
 
   int connect(const char *host, uint16_t port)
   {
-    _webSocketClient->begin(_path);
-    return 1;
+    (void)host;
+    (void)port;
+    return _webSocketClient->begin(_path, "mqtt")==0?1:0;
   }
 
   size_t write(uint8_t b)
@@ -73,19 +75,16 @@ public:
     return _webSocketClient->peek();
   }
 
-  void flush() {
-    if (!connected())
-      return;
-    _webSocketClient->flush();
-    return;
+  void flush()
+  {
+    if (connected())
+      _webSocketClient->flush();
   }
 
   void stop()
   {
-    if (!connected())
-      return;
-    _webSocketClient->stop();
-    return;
+    if (connected())
+      _webSocketClient->stop();
   }
 
   uint8_t connected()
@@ -99,7 +98,7 @@ public:
   }
 
 private:
-  WebSocketClient250 *_webSocketClient;
+  WebSocketClient *_webSocketClient;
   const char *_path;
 };
 
