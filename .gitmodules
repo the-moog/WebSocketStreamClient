@@ -1,0 +1,3 @@
+[submodule "examples/web-socket-mqtt"]
+	path = examples/web-socket-mqtt
+	url = https://github.com/areve/web-socket-mqtt
